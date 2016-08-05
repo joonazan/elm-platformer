@@ -20,7 +20,11 @@ addPos a b =
 
 model =
     { walkers = [{position=(0, 0), yspeed=0, onPlatform=False}]
-    , platforms = [{position=(-20, -100), length=200}]
+    , platforms =
+        [ {position=(-20, -100), length=200}
+        , {position=(-200, -100), length=100}
+        , {position=(30, 20), length=69}
+        ] ++ List.map (\x -> {position=(180+20*x,-100+8*x), length=20}) [0..5]
     , keys = Dict.empty
     }
 
@@ -74,7 +78,7 @@ platformCollision model =
                 pend = pstart+p.length
                 penetration = py - wy
             in
-                if pstart < wx && wx < pend && penetration > 0 && penetration < 10 then
+                if pstart < wx && wx < pend && penetration > 0 && penetration < 20 then
                     { position = (wx, py), yspeed = 0, onPlatform = True }
                 else w
         removeOnPlatform w = { w | onPlatform = False}
@@ -84,4 +88,4 @@ view model =
     let line start end = Collage.traced Collage.defaultLine (Collage.segment start end)
         walker w = line w.position (addPos w.position (0, 100))
         platform p = line p.position (addPos p.position (p.length, 0))
-    in Element.toHtml <| Collage.collage 500 500 <| (List.map walker model.walkers) ++ (List.map platform model.platforms)
+    in Element.toHtml <| Collage.collage 700 500 <| (List.map walker model.walkers) ++ (List.map platform model.platforms)
